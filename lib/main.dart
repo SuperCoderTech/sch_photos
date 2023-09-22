@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sc_photos/utils/sc_app_storage.dart';
 import 'package:sc_photos/widget/sc_appbar.dart';
 import 'package:sc_photos/widget/sc_gallery_list.dart';
 
@@ -32,6 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    SCAppStorage.init();
+
     return Scaffold(
       body: SizedBox(
         height: double.infinity,

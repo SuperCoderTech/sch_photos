@@ -13,6 +13,7 @@ class SCFolderList extends StatefulWidget {
 }
 
 class _SCFolderListState extends State<SCFolderList> {
+
   @override
   Widget build(BuildContext context) {
     List<Widget> folderWidgets = getFolders();

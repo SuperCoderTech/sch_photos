@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sc_photos/comunicator/sc_communicator.dart';
+import 'package:sc_photos/widget/sc_settings.dart';
 
 class SCAppBar extends StatelessWidget {
   Function uriChange;
 
   SCAppBar({Key? key, required this.uriChange}) : super(key: key);
-  TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +13,7 @@ class SCAppBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(Icons.home),
+          const SizedBox(),
           const Wrap(
             alignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
@@ -33,38 +32,14 @@ class SCAppBar extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) => getURLDialog(context));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SCSettings()));
             },
             child: Icon(Icons.settings,
                 size: 23, color: Colors.white, weight: 700),
           )
         ],
       ),
-    );
-  }
-
-  Widget getURLDialog(BuildContext context) {
-    _controller.text = RestDataCommunicator.BASE_URL;
-    return AlertDialog(
-      content: TextField(
-        controller: _controller,
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Private Key',
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => {
-            RestDataCommunicator.BASE_URL = _controller.text,
-            Navigator.pop(context, 'OK'),
-            uriChange()
-          },
-          child: const Text('OK'),
-        )
-      ],
     );
   }
 }
