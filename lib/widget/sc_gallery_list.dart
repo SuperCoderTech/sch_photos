@@ -14,56 +14,85 @@ class SCGalleryView extends StatefulWidget {
 
 class _SCGalleryViewState extends State<SCGalleryView> {
   String currentFolder = "";
-  List<dynamic> data = [];
-
-  void getData() async {
-    data = await RestDataCommunicator.sendRequest(RestURL.getImageByFolder,
-        params: {'folder': currentFolder});
-    print(data);
-    setState(() {});
-  }
-
-  void refreshCheck() {
-    if (widget.refresh) {
-      currentFolder = "";
-      widget.refresh = false;
-      getData();
-    }
-  }
 
   Future<bool> backPress() async {
     if (currentFolder.isEmpty) return true;
-
-    final lastSlashIndex = currentFolder.lastIndexOf("/");
-    if (lastSlashIndex == -1) {
-      currentFolder = "";
+    String tmp = currentFolder.substring(0, currentFolder.lastIndexOf("/"));
+    print("before back $currentFolder");
+    if (tmp.isNotEmpty && tmp.contains("/")) {
+      tmp = tmp.substring(0, tmp.lastIndexOf("/"));
+      currentFolder = "$tmp/";
     } else {
-      currentFolder = currentFolder.substring(0, lastSlashIndex);
-      if (currentFolder.isEmpty) currentFolder = "/";
+      currentFolder = "";
     }
-
-    print("currentFolder: $currentFolder");
-    getData();
+    print("current Folder $currentFolder");
+    setState(() {});
     return false;
   }
 
   void onFolderClick(String folderName) {
-    currentFolder += folderName + "/";
+    currentFolder += "$folderName/";
     print("modified folder :: $currentFolder");
-    getData();
+    setState(() {});
+  }
+
+  Future<List<dynamic>> getAllItems() async {
+    print("get All Items called");
+    List<dynamic> items = await RestDataCommunicator.sendRequest(
+        RestURL.getImageByFolder,
+        params: {'folder': currentFolder});
+    return items;
   }
 
   @override
   Widget build(BuildContext context) {
-    refreshCheck();
     return WillPopScope(
         onWillPop: backPress,
         child: SizedBox(
             width: double.infinity,
             height: double.infinity,
-            child: Column(children: [
-              SCFolderList(data: data, onFolderChange: onFolderClick),
-              SCImageList(currentFolder: currentFolder, data: data)
-            ])));
+            child: FutureBuilder<List<dynamic>>(
+              future: getAllItems(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<dynamic>> snapshot) {
+                if (snapshot.hasData) {
+                  return Column(children: [
+                    SCFolderList(
+                        data: snapshot.data!, onFolderChange: onFolderClick),
+                    SCImageList(
+                        currentFolder: currentFolder, data: snapshot.data!)
+                  ]);
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 50.0),
+                      child: Column(
+                        children: [
+                          Icon(Icons.error_outline,
+                              color: Colors.red, size: 60),
+                          Padding(
+                            padding: EdgeInsets.only(top: 16),
+                            child: Text('Failed to Load data 😢'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  return const Center(
+                    child: SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+              },
+            )));
   }
 }
+
+// Column(children: [
+// SCFolderList(data: data, onFolderChange: onFolderClick),
+// SCImageList(currentFolder: currentFolder, data: data)
+// ])

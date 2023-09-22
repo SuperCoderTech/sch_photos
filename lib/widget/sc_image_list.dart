@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:sc_photos/comunicator/sc_communicator.dart';
+import 'package:sc_photos/widget/sc_fullscreen_image_view.dart';
 import 'package:sc_photos/widget/sc_title.dart';
-
-import '../comunicator/sc_communicator.dart';
 
 class SCImageList extends StatefulWidget {
   List<dynamic> data;
@@ -32,7 +32,7 @@ class _SCImageListState extends State<SCImageList> {
       ),
       Expanded(
           child: Padding(
-              padding: EdgeInsets.only(left: 10, right: 10),
+              padding: const EdgeInsets.only(left: 10, right: 10),
               child: AlignedGridView.count(
                 crossAxisCount: 4,
                 mainAxisSpacing: 4,
@@ -46,6 +46,7 @@ class _SCImageListState extends State<SCImageList> {
   }
 
   List<dynamic> getImages() {
+    imageUrlList = [];
     List<dynamic> images =
         widget.data.where((element) => element['type'] == "image").toList();
     return images;
@@ -59,14 +60,16 @@ class _SCImageListState extends State<SCImageList> {
 
     return GestureDetector(
         onTap: () {
-          /*Navigator.push(
+          Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => FullScreenImageView(
-                      imageUrlList: imageUrlList, position: index)));*/
+                      imageUrlList: imageUrlList, position: index)));
         },
         child: CachedNetworkImage(
-          placeholder: (context, url) => CircularProgressIndicator(),
+          placeholder: (context, url) => const Center(
+              child: SizedBox(
+                  width: 30, height: 30, child: CircularProgressIndicator())),
           imageUrl: RestDataCommunicator.getImageUrl(
               widget.currentFolder, e['name'], "true"),
           imageBuilder: (context, imageProvider) => Container(
