@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sc_photos/comunicator/sc_communicator.dart';
 import 'package:sc_photos/utils/sc_app_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
-
-import '../comunicator/sc_communicator.dart';
 
 class SCSettings extends StatefulWidget {
   const SCSettings({Key? key}) : super(key: key);
@@ -12,15 +11,17 @@ class SCSettings extends StatefulWidget {
 }
 
 class _SCSettingsState extends State<SCSettings> {
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Settings")),
+        appBar: AppBar(
+            backgroundColor: const Color(0xff001B3A),
+            title: const Text("Settings")),
         body: SettingsList(
           sections: [
-            SettingsSection(title: Text('Common'), tiles: <SettingsTile>[
+            SettingsSection(title: const Text('Common'), tiles: <SettingsTile>[
               SettingsTile.navigation(
                 title: const Text('Server Url'),
                 leading: const Icon(Icons.computer_outlined),
@@ -47,7 +48,7 @@ class _SCSettingsState extends State<SCSettings> {
     return AlertDialog(
       content: Builder(builder: (context) {
         Size size = MediaQuery.of(context).size;
-        return Container(
+        return SizedBox(
           width: size.width * 0.9,
           child: TextField(
             controller: _controller,
