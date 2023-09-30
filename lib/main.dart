@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:sc_photos/utils/sc_app_storage.dart';
 import 'package:sc_photos/widget/sc_appbar.dart';
 import 'package:sc_photos/widget/sc_gallery_list.dart';
+import 'package:sc_photos/widget/sc_settings.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SCAppStorage.init();
   runApp(const MyApp());
 }
 
@@ -17,9 +20,9 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light()
-        .copyWith(scaffoldBackgroundColor: const Color(0xff001B3A)),
+          .copyWith(scaffoldBackgroundColor: const Color(0xff001B3A)),
       darkTheme: ThemeData.dark()
-        .copyWith(scaffoldBackgroundColor: const Color(0xff001B3A)),
+          .copyWith(scaffoldBackgroundColor: const Color(0xff001B3A)),
       home: const MyHomePage(),
     );
   }
@@ -37,8 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    SCAppStorage.init();
-
+    print("MyHomePage ---");
     return Scaffold(
       body: SizedBox(
         height: double.infinity,
@@ -46,11 +48,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const SizedBox(height: 45),
-            SCAppBar(uriChange: () {
-              setState(() {
-                refresh = true;
-              });
+            const SizedBox(height: 50),
+            SCAppBar(settingsClick: () {
+              Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SCSettings()))
+                  .then((value) => setState(() {}));
             }),
             const SizedBox(height: 25),
             Expanded(
@@ -60,9 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(40),
-                        topLeft: Radius.circular(40))),
-                child: SCGalleryView(refresh: refresh),
+                        topRight: Radius.circular(30),
+                        topLeft: Radius.circular(30))),
+                child: SCGalleryView(),
               ),
             ),
           ],

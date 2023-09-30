@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sc_photos/widget/sc_settings.dart';
 
 class SCAppBar extends StatelessWidget {
-  Function uriChange;
-
-  SCAppBar({Key? key, required this.uriChange}) : super(key: key);
+  Function settingsClick;
+  SCAppBar({Key? key, required this.settingsClick}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +31,7 @@ class SCAppBar extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => SCSettings()));
+              settingsClick();
             },
             child: Icon(Icons.settings,
                 size: 23, color: Colors.white, weight: 700),

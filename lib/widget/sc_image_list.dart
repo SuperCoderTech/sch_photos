@@ -67,9 +67,16 @@ class _SCImageListState extends State<SCImageList> {
                       imageUrlList: imageUrlList, position: index)));
         },
         child: CachedNetworkImage(
-          placeholder: (context, url) => const Center(
+          placeholder: (context, url) => const SizedBox(
+            height: 120,
+            child: Center(
               child: SizedBox(
-                  width: 30, height: 30, child: CircularProgressIndicator())),
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
           imageUrl: RestDataCommunicator.getImageUrl(
               widget.currentFolder, e['name'], "true"),
           imageBuilder: (context, imageProvider) => Container(

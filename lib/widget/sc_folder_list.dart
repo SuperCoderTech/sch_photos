@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sc_photos/utils/sc_app_storage.dart';
 import 'package:sc_photos/widget/sc_title.dart';
 
 class SCFolderList extends StatefulWidget {
@@ -13,7 +14,6 @@ class SCFolderList extends StatefulWidget {
 }
 
 class _SCFolderListState extends State<SCFolderList> {
-
   @override
   Widget build(BuildContext context) {
     List<Widget> folderWidgets = getFolders();
@@ -31,8 +31,12 @@ class _SCFolderListState extends State<SCFolderList> {
   }
 
   List<Widget> getFolders() {
+    print(" show hidden files ${SCAppConstants.showHiddenfiles}");
     List<Widget> widgets = widget.data
-        .where((element) => element['type'] == "directory")
+        .where((element) =>
+            element['type'] == "directory" &&
+            (SCAppConstants.showHiddenfiles ||
+                !element['name'].toString().startsWith(".")))
         .map((e) => GestureDetector(
             onTap: () {
               print("folder changed :: $e['name']");
@@ -45,7 +49,7 @@ class _SCFolderListState extends State<SCFolderList> {
               children: [
                 const Icon(Icons.folder, size: 60),
                 SizedBox(
-                    width: 80,
+                    width: 75,
                     child: Align(
                         alignment: Alignment.center,
                         child: Text(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:sc_photos/utils/sc_app_storage.dart';
 
 enum RestURL {
   getAuthToken,
@@ -8,7 +9,8 @@ enum RestURL {
   getImageByFolder,
   send_image,
   create_folder,
-  thumb
+  thumb,
+  change_upload_folder
 }
 
 extension ParseToString on RestURL {
@@ -21,13 +23,19 @@ class RestDataCommunicator {
   static String BASE_URL = "http://192.168.X.XX:5000/";
   static String? AUTH_KEY = null;
 
+  static setDefaultStorage() {
+    sendRequest(RestURL.change_upload_folder,
+        params: {'drive': SCAppConstants.defaultDrive});
+  }
+
   static getUrlWithAuth(url) {
     return BASE_URL + url.toString() + "?authKey=" + AUTH_KEY.toString();
   }
 
   static Future<bool> getAuthToken() async {
     print(BASE_URL + 'getAuthToken');
-    final uri = Uri.parse(BASE_URL + 'getAuthToken');
+    final uri =
+        Uri.parse(BASE_URL + 'getAuthToken/' + SCAppConstants.defaultUser);
     var response = await http.get(uri);
     int statusCode = response.statusCode;
     String responseBody = response.body;
@@ -40,7 +48,7 @@ class RestDataCommunicator {
     return false;
   }
 
-  static void thumb(){
+  static void thumb() {
     sendRequest(RestURL.thumb);
   }
 
@@ -108,8 +116,8 @@ class RestDataCommunicator {
   static Future<String> asyncFileUpload(String folder, File file,
       {String url = "saveImage", Map<String, dynamic>? params}) async {
     String queryString = getParamsString(params);
-    var request = http.MultipartRequest(
-        "POST", Uri.parse(getUrlWithAuth(url) + "&folder=" + folder + queryString));
+    var request = http.MultipartRequest("POST",
+        Uri.parse(getUrlWithAuth(url) + "&folder=" + folder + queryString));
     Map<String, String> headers = {"Content-type": "multipart/form-data"};
     var pic = await http.MultipartFile.fromPath("file_field", file.path);
     request.files.add(pic);

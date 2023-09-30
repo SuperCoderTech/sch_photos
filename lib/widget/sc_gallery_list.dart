@@ -4,9 +4,7 @@ import 'package:sc_photos/widget/sc_folder_list.dart';
 import 'package:sc_photos/widget/sc_image_list.dart';
 
 class SCGalleryView extends StatefulWidget {
-  bool refresh;
-
-  SCGalleryView({Key? key, this.refresh = false}) : super(key: key);
+  SCGalleryView({Key? key}) : super(key: key);
 
   @override
   State<SCGalleryView> createState() => _SCGalleryViewState();
@@ -55,6 +53,15 @@ class _SCGalleryViewState extends State<SCGalleryView> {
               future: getAllItems(),
               builder: (BuildContext context,
                   AsyncSnapshot<List<dynamic>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
                 if (snapshot.hasData) {
                   return Column(children: [
                     SCFolderList(
@@ -62,7 +69,7 @@ class _SCGalleryViewState extends State<SCGalleryView> {
                     SCImageList(
                         currentFolder: currentFolder, data: snapshot.data!)
                   ]);
-                } else if (snapshot.hasError) {
+                } else {
                   return const Center(
                     child: Padding(
                       padding: EdgeInsets.only(top: 50.0),
@@ -76,14 +83,6 @@ class _SCGalleryViewState extends State<SCGalleryView> {
                           ),
                         ],
                       ),
-                    ),
-                  );
-                } else {
-                  return const Center(
-                    child: SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: CircularProgressIndicator(),
                     ),
                   );
                 }
