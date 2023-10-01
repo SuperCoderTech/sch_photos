@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:sc_photos/comunicator/sc_communicator.dart';
+import 'package:sc_photos/utils/sc_app_storage.dart';
 import 'package:sc_photos/widget/sc_folder_list.dart';
 import 'package:sc_photos/widget/sc_image_list.dart';
 
 class SCGalleryView extends StatefulWidget {
-  SCGalleryView({Key? key}) : super(key: key);
+  const SCGalleryView({Key? key}) : super(key: key);
 
   @override
   State<SCGalleryView> createState() => _SCGalleryViewState();
 }
 
 class _SCGalleryViewState extends State<SCGalleryView> {
-  String currentFolder = "";
-
   Future<bool> backPress() async {
-    if (currentFolder.isEmpty) return true;
-    String tmp = currentFolder.substring(0, currentFolder.lastIndexOf("/"));
-    print("before back $currentFolder");
+    if (SCAppConstants.currentFolder.isEmpty) return true;
+    String tmp = SCAppConstants.currentFolder
+        .substring(0, SCAppConstants.currentFolder.lastIndexOf("/"));
+    print("before back $SCAppConstants.currentFolder");
     if (tmp.isNotEmpty && tmp.contains("/")) {
       tmp = tmp.substring(0, tmp.lastIndexOf("/"));
-      currentFolder = "$tmp/";
+      SCAppConstants.currentFolder = "$tmp/";
     } else {
-      currentFolder = "";
+      SCAppConstants.currentFolder = "";
     }
-    print("current Folder $currentFolder");
+    print("current Folder $SCAppConstants.currentFolder");
     setState(() {});
     return false;
   }
 
   void onFolderClick(String folderName) {
-    currentFolder += "$folderName/";
-    print("modified folder :: $currentFolder");
+    SCAppConstants.currentFolder += "$folderName/";
+    print("modified folder :: $SCAppConstants.currentFolder");
     setState(() {});
   }
 
@@ -38,7 +38,7 @@ class _SCGalleryViewState extends State<SCGalleryView> {
     print("get All Items called");
     List<dynamic> items = await RestDataCommunicator.sendRequest(
         RestURL.getImageByFolder,
-        params: {'folder': currentFolder});
+        params: {'folder': SCAppConstants.currentFolder});
     return items;
   }
 
@@ -67,7 +67,8 @@ class _SCGalleryViewState extends State<SCGalleryView> {
                     SCFolderList(
                         data: snapshot.data!, onFolderChange: onFolderClick),
                     SCImageList(
-                        currentFolder: currentFolder, data: snapshot.data!)
+                        currentFolder: SCAppConstants.currentFolder,
+                        data: snapshot.data!)
                   ]);
                 } else {
                   return const Center(
@@ -93,5 +94,5 @@ class _SCGalleryViewState extends State<SCGalleryView> {
 
 // Column(children: [
 // SCFolderList(data: data, onFolderChange: onFolderClick),
-// SCImageList(currentFolder: currentFolder, data: data)
+// SCImageList(SCAppConstants.currentFolder: SCAppConstants.currentFolder, data: data)
 // ])

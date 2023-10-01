@@ -1,12 +1,16 @@
+import 'dart:ui';
+
 import 'package:sc_photos/comunicator/sc_communicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum LocalStorageConstants { SERVER_URL, SHOW_HIDDEN_FILES, DRIVE, USER_NAME }
 
 class SCAppConstants {
+  static const color = const Color(0xff001B3A);
   static bool showHiddenfiles = false;
   static String defaultDrive = "Mine";
   static String defaultUser = "MRB";
+  static String currentFolder = "";
 }
 
 class SCAppStorage {
@@ -55,9 +59,10 @@ class SCAppStorage {
     }
     if (getValueFromLocalStorage(LocalStorageConstants.USER_NAME) != null) {
       SCAppConstants.defaultUser =
-      getValueFromLocalStorage(LocalStorageConstants.USER_NAME)!;
+          getValueFromLocalStorage(LocalStorageConstants.USER_NAME)!;
     }
     RestDataCommunicator.setDefaultStorage();
     RestDataCommunicator.getAuthToken();
+    SCAppConstants.currentFolder = "";
   }
 }

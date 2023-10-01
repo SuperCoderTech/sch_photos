@@ -51,10 +51,13 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
   }
 
   Future<String> downloadImage() async {
-    var status = await Permission.manageExternalStorage.request();
+    var status = await Permission.manageExternalStorage.status;
 
     if (!status.isGranted) {
-      return "";
+      status = await Permission.manageExternalStorage.request();
+      if (!status.isGranted) {
+        return "";
+      }
     }
 
     Fluttertoast.showToast(

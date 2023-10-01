@@ -21,7 +21,12 @@ class _SCFolderListState extends State<SCFolderList> {
     return Column(
       children: [
         const SizedBox(height: 5),
-        const TitleView(titleTxt: "Folders", arrowReqd: true, leftPadding: 15),
+        TitleView(
+            titleTxt: SCAppConstants.currentFolder.isEmpty
+                ? "Folder"
+                : SCAppConstants.currentFolder,
+            arrowReqd: true,
+            leftPadding: 15),
         SizedBox(
           width: double.infinity,
           child: Wrap(spacing: 10, runSpacing: 20, children: folderWidgets),
