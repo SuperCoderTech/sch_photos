@@ -48,8 +48,12 @@ class RestDataCommunicator {
     return false;
   }
 
-  static void thumb() {
-    sendRequest(RestURL.thumb);
+  static void thumb() async {
+    String url =
+        "$BASE_URL${RestURL.thumb.toShortString()}/${SCAppConstants.defaultUser}";
+    print("url $url");
+    final uri = Uri.parse(url);
+    var response = await http.get(uri);
   }
 
   static String getParamsString(Map<String, dynamic>? params) {
@@ -64,7 +68,7 @@ class RestDataCommunicator {
   }
 
   static Future<dynamic>? sendRequest(RestURL url,
-      {Map<String, dynamic>? params}) async {
+      {Map<String, dynamic>? params, String? path}) async {
     if (AUTH_KEY == null) await RestDataCommunicator.getAuthToken();
     String queryString = getParamsString(params);
     String fullUrl = getUrlWithAuth(url.toShortString()) + queryString;

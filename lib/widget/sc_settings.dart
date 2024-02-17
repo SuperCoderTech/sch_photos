@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sc_photos/commons/sc_common_widgets.dart';
 import 'package:sc_photos/comunicator/sc_communicator.dart';
 import 'package:sc_photos/utils/sc_app_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -11,8 +12,6 @@ class SCSettings extends StatefulWidget {
 }
 
 class _SCSettingsState extends State<SCSettings> {
-  final TextEditingController _controller = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,9 +26,17 @@ class _SCSettingsState extends State<SCSettings> {
                 leading: const Icon(Icons.computer_outlined),
                 value: Text(RestDataCommunicator.BASE_URL),
                 onPressed: (BuildContext context) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) => getURLDialog(context));
+                  SCCommonWidgets.showTextDialog(
+                    context,
+                    label: "Private Key",
+                    defaultValue: RestDataCommunicator.BASE_URL,
+                    onChange: (changedVal) {
+                      RestDataCommunicator.BASE_URL = changedVal;
+                      SCAppStorage.setValueLocalStorage(
+                          LocalStorageConstants.SERVER_URL, changedVal);
+                      setState(() {});
+                    },
+                  );
                 },
               ),
               SettingsTile.navigation(
@@ -37,18 +44,18 @@ class _SCSettingsState extends State<SCSettings> {
                 leading: const Icon(Icons.person),
                 value: Text(SCAppConstants.defaultUser),
                 onPressed: (BuildContext context) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) => textDialog(context,
-                              label: "UserName",
-                              defaultValue: SCAppConstants.defaultUser,
-                              onChange: () {
-                            SCAppConstants.defaultUser = _controller.text;
-                            SCAppStorage.setValueLocalStorage(
-                                LocalStorageConstants.USER_NAME,
-                                _controller.text);
-                            SCAppStorage.updateAllSettings();
-                          }));
+                  SCCommonWidgets.showTextDialog(
+                    context,
+                    label: "UserName",
+                    defaultValue: SCAppConstants.defaultUser,
+                    onChange: (changedValue) {
+                      SCAppConstants.defaultUser = changedValue;
+                      SCAppStorage.setValueLocalStorage(
+                          LocalStorageConstants.USER_NAME, changedValue);
+                      SCAppStorage.updateAllSettings();
+                      setState(() {});
+                    },
+                  );
                 },
               ),
               SettingsTile.navigation(
@@ -56,18 +63,18 @@ class _SCSettingsState extends State<SCSettings> {
                 leading: const Icon(Icons.drive_file_move),
                 value: Text(SCAppConstants.defaultDrive),
                 onPressed: (BuildContext context) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) => textDialog(context,
-                              label: "Drive Name",
-                              defaultValue: SCAppConstants.defaultDrive,
-                              onChange: () {
-                            SCAppConstants.defaultDrive = _controller.text;
-                            SCAppStorage.setValueLocalStorage(
-                                LocalStorageConstants.DRIVE,
-                                _controller.text);
-                            SCAppStorage.updateAllSettings();
-                          }));
+                  SCCommonWidgets.showTextDialog(
+                    context,
+                    label: "Drive Name",
+                    defaultValue: SCAppConstants.defaultDrive,
+                    onChange: (changedVal) {
+                      SCAppConstants.defaultDrive = changedVal;
+                      SCAppStorage.setValueLocalStorage(
+                          LocalStorageConstants.DRIVE, changedVal);
+                      SCAppStorage.updateAllSettings();
+                      setState(() {});
+                    },
+                  );
                 },
               ),
               SettingsTile.switchTile(
@@ -85,63 +92,5 @@ class _SCSettingsState extends State<SCSettings> {
             ])
           ],
         ));
-  }
-
-  Widget textDialog(BuildContext context,
-      {required String label,
-      required String defaultValue,
-      required Function onChange}) {
-    _controller.text = defaultValue;
-    return AlertDialog(
-      content: Builder(builder: (context) {
-        Size size = MediaQuery.of(context).size;
-        return SizedBox(
-          width: size.width * 0.9,
-          child: TextField(
-            controller: _controller,
-            decoration: InputDecoration(
-                border: const OutlineInputBorder(), labelText: label),
-          ),
-        );
-      }),
-      actions: [
-        TextButton(
-          onPressed: () =>
-              {onChange(), Navigator.pop(context, 'OK'), setState(() {})},
-          child: const Text('OK'),
-        )
-      ],
-    );
-  }
-
-  Widget getURLDialog(BuildContext context) {
-    _controller.text = RestDataCommunicator.BASE_URL;
-    return AlertDialog(
-      content: Builder(builder: (context) {
-        Size size = MediaQuery.of(context).size;
-        return SizedBox(
-          width: size.width * 0.9,
-          child: TextField(
-            controller: _controller,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Private Key',
-            ),
-          ),
-        );
-      }),
-      actions: [
-        TextButton(
-          onPressed: () => {
-            RestDataCommunicator.BASE_URL = _controller.text,
-            SCAppStorage.setValueLocalStorage(
-                LocalStorageConstants.SERVER_URL, _controller.text),
-            Navigator.pop(context, 'OK'),
-            setState(() {})
-          },
-          child: const Text('OK'),
-        )
-      ],
-    );
   }
 }

@@ -1,34 +1,60 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sc_photos/commons/sc_common_widgets.dart';
+import 'package:sc_photos/comunicator/sc_communicator.dart';
 import 'package:sc_photos/utils/sc_app_storage.dart';
+import 'package:sc_photos/widget/sc_image_upload.dart';
 
 class SCFabOptions extends StatelessWidget {
   const SCFabOptions({Key? key}) : super(key: key);
 
+  void uploadPhotos(BuildContext context) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => SCImageUpload()));
+  }
+
+  void createFolder(BuildContext context) async {
+    SCCommonWidgets.showTextDialog(context,
+        label: "Folder Name", defaultValue: "", onChange: (folderName) async {
+      print(folderName);
+      await RestDataCommunicator.sendRequest(RestURL.create_folder,
+          params: {'folder': SCAppConstants.currentFolder, 'name': folderName});
+      Navigator.of(context, rootNavigator: true).pop();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 120,
+        height: 130,
         decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(15), topRight: Radius.circular(15))),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            buildOption(icon: Icons.photo, text: "Photos"),
-            buildOption(icon: Icons.slow_motion_video_outlined, text: "Video"),
-            buildOption(icon: Icons.folder_copy_outlined, text: "Add Folder")
-          ],
+        child: Center(
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                buildOption(context,
+                    icon: Icons.photo, text: "Photos", onTap: uploadPhotos),
+                buildOption(context,
+                    icon: Icons.slow_motion_video_outlined, text: "Video"),
+                buildOption(context,
+                    icon: Icons.folder_copy_outlined,
+                    text: "Add Folder",
+                    onTap: createFolder),
+                buildOption(context,
+                    icon: Icons.refresh, text: "Thumbnail", onTap: runThumbnail)
+              ]),
         ));
   }
 
-  Widget buildOption(
-      {required IconData icon, required String text, required Function onTap}) {
+  Widget buildOption(BuildContext context,
+      {required IconData icon, required String text, Function? onTap}) {
     return GestureDetector(
       onTap: () {
-        onTap();
+        print("tapped me");
+        if (onTap != null) onTap!(context);
       },
       child: Wrap(
           direction: Axis.vertical,
@@ -41,5 +67,10 @@ class SCFabOptions extends StatelessWidget {
             Text(text)
           ]),
     );
+  }
+
+  runThumbnail(BuildContext context) {
+    RestDataCommunicator.thumb();
+    Navigator.of(context, rootNavigator: true).pop();
   }
 }
