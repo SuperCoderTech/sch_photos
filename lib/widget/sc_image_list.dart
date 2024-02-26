@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:sc_photos/comunicator/sc_communicator.dart';
+import 'package:sc_commons/rest/rest_client.dart';
+import 'package:sc_photos/constants/sc_data_constants.dart';
+import 'package:sc_photos/constants/sc_url_constants.dart';
 import 'package:sc_photos/widget/sc_fullscreen_image_view.dart';
 import 'package:sc_photos/widget/sc_title.dart';
 
@@ -33,16 +35,41 @@ class _SCImageListState extends State<SCImageList> {
       Expanded(
           child: Padding(
               padding: const EdgeInsets.only(left: 10, right: 10),
-              child: AlignedGridView.count(
-                crossAxisCount: 4,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-                itemCount: imageWidget.length,
-                itemBuilder: (context, index) {
-                  return getImageWidget(imageWidget[index]);
-                },
-              )))
+              child: buildMasonaryGridView(imageWidget)))
     ]));
+  }
+
+  AlignedGridView buildAlignedGridView(List<dynamic> imageWidget) {
+    return AlignedGridView.count(
+      crossAxisCount: 4,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      itemCount: imageWidget.length,
+      itemBuilder: (context, index) {
+        return getImageWidget(imageWidget[index]);
+      },
+    );
+  }
+
+  Widget buildMasonaryGridView(List<dynamic> imageWidget) {
+    return GridView.custom(
+      gridDelegate: SliverQuiltedGridDelegate(
+        crossAxisCount: 4,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
+        repeatPattern: QuiltedGridRepeatPattern.inverted,
+        pattern: [
+          QuiltedGridTile(2, 2),
+          QuiltedGridTile(1, 1),
+          QuiltedGridTile(1, 1),
+          QuiltedGridTile(1, 2),
+        ],
+      ),
+      childrenDelegate: SliverChildBuilderDelegate(
+        childCount: imageWidget.length,
+        (context, index) => getImageWidget(imageWidget[index]),
+      ),
+    );
   }
 
   List<dynamic> getImages() {
@@ -53,10 +80,11 @@ class _SCImageListState extends State<SCImageList> {
   }
 
   Widget getImageWidget(e) {
-    String url = RestDataCommunicator.getImageUrl(
-        widget.currentFolder, e['name'], "false");
+    //authKey=${RestClient.SESSION_KEY}&
+    String url =
+        "${RestClient.BASE_URL + SCURLConstants.SEND_IMAGE}?folder=${SCDataConstants.currentFolder}&file=${e['name']}";
     int index = imageUrlList.length;
-    imageUrlList.add({"name": e['name'], "url": url});
+    imageUrlList.add({"name": e['name'], "url": "$url&thumb=false"});
 
     return GestureDetector(
         onTap: () {
@@ -77,8 +105,11 @@ class _SCImageListState extends State<SCImageList> {
               ),
             ),
           ),
-          imageUrl: RestDataCommunicator.getImageUrl(
-              widget.currentFolder, e['name'], "true"),
+          imageUrl: "$url&thumb=true",
+          httpHeaders: {
+            "ngrok-skip-browser-warning": "true",
+            'sessionKey': RestClient.SESSION_KEY
+          },
           imageBuilder: (context, imageProvider) => Container(
             width: double.infinity,
             height: 120,

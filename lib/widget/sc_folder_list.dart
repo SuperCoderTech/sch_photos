@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sc_photos/constants/sc_data_constants.dart';
 import 'package:sc_photos/utils/sc_app_storage.dart';
 import 'package:sc_photos/widget/sc_title.dart';
 
@@ -22,9 +23,9 @@ class _SCFolderListState extends State<SCFolderList> {
       children: [
         const SizedBox(height: 5),
         TitleView(
-            titleTxt: SCAppConstants.currentFolder.isEmpty
-                ? "Folder"
-                : SCAppConstants.currentFolder,
+            titleTxt: SCDataConstants.currentFolder.isEmpty
+                ? "Folder(s)"
+                : SCDataConstants.currentFolder,
             arrowReqd: true,
             leftPadding: 15),
         SizedBox(

@@ -25,7 +25,6 @@ class AppTheme {
   static const String fontName = 'WorkSans';
 
   static final lightTheme = ThemeData(
-      selectedRowColor: secondaryColor,
       fontFamily: fontName,
       colorScheme: ColorScheme.light(primary: BG),
       backgroundColor: BG,
@@ -38,7 +37,6 @@ class AppTheme {
       platform: TargetPlatform.iOS);
 
   static final darkTheme = ThemeData(
-      selectedRowColor: secondaryColor,
       fontFamily: fontName,
       bottomAppBarColor: Colors.black,
       primaryColor: darkPrimary,

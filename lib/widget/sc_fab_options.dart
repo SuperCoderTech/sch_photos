@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:sc_commons/rest/rest_client.dart';
 import 'package:sc_photos/commons/sc_common_widgets.dart';
-import 'package:sc_photos/comunicator/sc_communicator.dart';
+import 'package:sc_photos/constants/sc_data_constants.dart';
+import 'package:sc_photos/constants/sc_url_constants.dart';
 import 'package:sc_photos/utils/sc_app_storage.dart';
 import 'package:sc_photos/widget/sc_image_upload.dart';
 
 class SCFabOptions extends StatelessWidget {
-  const SCFabOptions({Key? key}) : super(key: key);
+  Function? onUpdate;
+
+  SCFabOptions({Key? key, this.onUpdate}) : super(key: key);
 
   void uploadPhotos(BuildContext context) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => SCImageUpload()));
+            context, MaterialPageRoute(builder: (context) => SCImageUpload()))
+        .then((value) => {if (onUpdate != null) onUpdate!()});
   }
 
   void createFolder(BuildContext context) async {
     SCCommonWidgets.showTextDialog(context,
         label: "Folder Name", defaultValue: "", onChange: (folderName) async {
       print(folderName);
-      await RestDataCommunicator.sendRequest(RestURL.create_folder,
-          params: {'folder': SCAppConstants.currentFolder, 'name': folderName});
+      await RestClient.sendRequest(SCURLConstants.CREATE_FOLDER, params: {
+        "folder": SCDataConstants.currentFolder,
+        "newFolder": folderName
+      });
       Navigator.of(context, rootNavigator: true).pop();
+      if (onUpdate != null) onUpdate!();
     });
   }
 
@@ -62,7 +70,11 @@ class SCFabOptions extends StatelessWidget {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             CircleAvatar(
-                backgroundColor: SCAppConstants.color, child: Icon(icon)),
+                backgroundColor: SCAppConstants.color,
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                )),
             const SizedBox(height: 10),
             Text(text)
           ]),
@@ -70,7 +82,7 @@ class SCFabOptions extends StatelessWidget {
   }
 
   runThumbnail(BuildContext context) {
-    RestDataCommunicator.thumb();
+    RestClient.sendRequest(SCURLConstants.THUMB, params: {"folder": SCDataConstants.currentFolder});
     Navigator.of(context, rootNavigator: true).pop();
   }
 }

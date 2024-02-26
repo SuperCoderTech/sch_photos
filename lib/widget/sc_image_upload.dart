@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:sc_photos/comunicator/sc_communicator.dart';
-import 'package:sc_photos/utils/sc_app_storage.dart';
+import 'package:sc_commons/rest/rest_client.dart';
+import 'package:sc_photos/constants/sc_data_constants.dart';
 
 class SCImageUpload extends StatefulWidget {
   const SCImageUpload({Key? key}) : super(key: key);
@@ -48,8 +48,8 @@ class _SCImageUploadState extends State<SCImageUpload> {
   Future<void> uploadSingleImage(file) async {
     file['status'] = "WIP";
     setState(() {});
-    var resp = await RestDataCommunicator.asyncFileUpload(
-        SCAppConstants.currentFolder, file['file']);
+    var resp = await RestClient.asyncFileUpload(file['file'],
+        params: {"folder": SCDataConstants.currentFolder});
     print(resp);
     file['status'] = "Done";
     setState(() {});
@@ -64,7 +64,6 @@ class _SCImageUploadState extends State<SCImageUpload> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text("Uploading Photos   ${getFinishCount()}"),
-
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 10.0),

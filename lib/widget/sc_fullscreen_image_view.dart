@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sc_commons/rest/rest_client.dart';
 import 'package:share_plus/share_plus.dart';
 
 class FullScreenImageView extends StatefulWidget {
@@ -37,7 +38,11 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
     url = url.replaceAll("send_image", "delete_image");
     print(url);
     final uri = Uri.parse(url);
-    var response = await get(uri);
+    var response = await get(uri, headers: {
+      "ngrok-skip-browser-warning": "true",
+      'sessionKey': RestClient.SESSION_KEY
+    });
+
     widget.imageUrlList.removeAt(currentImagePosition);
     Fluttertoast.showToast(
         msg: "Deleted...",
@@ -113,7 +118,12 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
                     currentImagePosition = index;
                     return PhotoViewGalleryPageOptions(
                       imageProvider: CachedNetworkImageProvider(
-                          widget.imageUrlList[index]['url']!),
+                        widget.imageUrlList[index]['url']!,
+                        headers: {
+                          "ngrok-skip-browser-warning": "true",
+                          'sessionKey': RestClient.SESSION_KEY
+                        },
+                      ),
                       initialScale: PhotoViewComputedScale.contained * 1,
                     );
                   },
